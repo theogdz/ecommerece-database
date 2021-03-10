@@ -1,0 +1,135 @@
+create table address
+(
+    address_id 			numeric(6,0),
+    street_address 		varchar(30) not null,
+    city			varchar(20) not null,
+    state 			varchar(2) not null,
+    zip				varchar(5) not null,
+    primary key (address_id)
+);
+
+create table customer
+(
+    customer_id			numeric(6,0) not null,
+    name			varchar(20),
+    card_number			numeric(19,0) not null,
+    balance			numeric(6,2) not null,
+    address_id			numeric(6,0),
+    password			varchar(20) not null,
+    primary key (customer_id),
+    foreign key (address_id) references address (address_id)
+	on update cascade
+	on delete set null
+);
+
+create table employee
+(
+    employee_id			numeric(6,0) not null,
+    name			varchar(20),
+    salary			numeric(6,0),
+    job_title			varchar(20),
+    department			varchar(20),
+    work_status			varchar(15),
+    address_id			numeric(6,0),
+    password			varchar(20) not null,
+    primary key (employee_id),
+    foreign key (address_id) references address (address_id)
+	on update cascade
+	on delete set null
+);
+
+create table orders
+(
+    order_id			numeric(6,0) not null,
+    customer_id			numeric(6,0),
+    status			varchar(15),
+    tracking_number		varchar(15),
+    time_stamp			varchar(16),
+    primary key (order_id),
+    foreign key (customer_id) references customer (customer_id)
+	on update cascade
+	on delete cascade
+);
+
+create table product 
+(
+    product_id			numeric(6,0) not null,
+    price			numeric(6,2) not null,
+    product_name		varchar(30),
+    department			varchar(15),
+    stock			numeric(3,0),
+    primary key (product_id)
+);
+
+create table cart_items
+(
+    order_id			numeric(6,0) not null,
+    incart_id			numeric(2,0) not null,
+    product_id			numeric(5,0),
+    quantity			numeric(3,0),
+    primary key (order_id, incart_id),
+    foreign key (order_id) references orders (order_id)
+	on update cascade
+	on delete cascade,
+    foreign key (product_id) references product (product_id)
+	on update cascade
+	on delete set null
+);
+
+create table supplier
+(
+    supplier_id			numeric(3,0) not null,
+    name			varchar(30),
+    wholesale_price		numeric(6,2),
+    department			varchar(15),
+    product_id			numeric(6,0),
+    address_id			numeric(6,0),
+    primary key (supplier_id),
+    foreign key (address_id) references address (address_id)
+	on update cascade
+	on delete set null,
+    foreign key (product_id) references product (product_id)
+	on update cascade
+	on delete cascade
+);
+
+create table warehouse
+(
+    warehouse_id		numeric(3,0) not null,
+    capacity			numeric(8,0),
+    num_employees		numeric(4,0),
+    address_id			numeric(6,0),
+    primary key (warehouse_id),
+    foreign key (address_id) references address (address_id)
+	on update cascade
+	on delete set null
+);
+
+create table supplies
+(
+    supplier_id			numeric(3,0) not null,
+    product_id			numeric(6,0) not null,
+    warehouse_id		numeric(3,0) not null,
+    primary key (supplier_id, product_id, warehouse_id),
+    foreign key (product_id) references product (product_id)
+	on update cascade
+	on delete cascade,
+    foreign key (warehouse_id) references warehouse (warehouse_id)
+	on update cascade
+	on delete cascade
+);
+
+create table stores
+(
+    warehouse_id		numeric(3,0) not null,
+    product_id			numeric(6,0) not null,
+    stock			numeric(3,0),
+    primary key (warehouse_id, product_id),
+    foreign key (product_id) references product (product_id)
+	on update cascade
+	on delete cascade,
+    foreign key (warehouse_id) references warehouse (warehouse_id)
+	on update cascade
+	on delete cascade
+);
+
